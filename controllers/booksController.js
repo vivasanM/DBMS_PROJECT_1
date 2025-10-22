@@ -4,25 +4,7 @@ const pool = require("../db");
 async function getAllBooks(req, res) {
   try {
     const result = await pool.query("SELECT * FROM Books ORDER BY BookID");
-
-   const booksWithImages = result.rows.map(row => {
-      let imageBase64 = null;
-
-      if (row.imagename) {
-        const imagePath = path.join(__dirname, "uploads", row.imagename);
-        if (fs.existsSync(imagePath)) {
-          const imageBuffer = fs.readFileSync(imagePath);
-          imageBase64 = `data:image/${path.extname(row.imagename).slice(1)};base64,${imageBuffer.toString('base64')}`;
-        }
-      }
-
-      return {
-        ...row,
-        image: imageBase64
-      };
-  });
-
-    res.json(booksWithImages);
+    res.json(result.rows);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server error");
